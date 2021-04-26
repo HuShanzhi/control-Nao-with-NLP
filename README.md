@@ -1,4 +1,4 @@
-# NaoControl
+# control-Nao-with-NLP
 基于自然语言处理控制Nao型仿人机器人
 ## 1  环境配置
 开发环境：
