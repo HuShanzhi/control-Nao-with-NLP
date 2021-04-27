@@ -196,7 +196,7 @@ class Nao(Robot):
 
     # 加载Motion文件
     def setMotion(self):
-        self.move = Motion_('HandWave', 8)
+        self.move = Motion_('Forwards', 8)
         self.handWave = Motion_('HandWave', 5)
         self.forwards = Motion_('Forwards', 4)
         self.forwards50 = Motion_('Forwards50', 8)
@@ -231,7 +231,7 @@ class Nao(Robot):
         print("DIRECTION = {}".format(DIRECTION))
         # ========================================= #
 
-    def _move(self, target):
+    def _move(self, target, motion=None):
         """
         :param target: 移动目标点的坐标
         :return:
@@ -358,25 +358,75 @@ class Nao(Robot):
                 self._move(target)
 
         elif target.measureWord is not None and target.numeral is not None:
-            pass
+            if target.measureWord in ['米', 'm', 'M']:
+                try:
+                    distance = int(target.numeral) / 10
+                except:
+                    distance = 1/10
+                Nao_x, Nao_y = self.getNaoGps()
+                coordinate = [Nao_x, Nao_y]
+                if motion == self.turnLeft180.motion:
+                    t = ControllerThread("turnLeft180", mutex2, self.startMotion, self.turnLeft180)
+                    t.start()
+                else:
+                    t = ControllerThread("handWave", mutex2, self.startMotion, self.handWave)
+                    t.start()
+                self._move_distance(motion, distance, coordinate)
+
+    # 通过距离控制移动
+    def _move_distance(self, motion, distance, coordinate):
+        synchro.acquire()
+        # Nao当前坐标
+        Nao_x, Nao_y = self.getNaoGps()
+        print("Nao的坐标（{},{}）".format(Nao_x, Nao_y))
+        print("distance = {}".format(distance))
+        if motion in [self.move.motion, self.forwards50.motion, self.forwards.motion, self.turnLeft180.motion]:
+            if DIRECTION in [0, 2]:
+                # x 方向
+                distance -= abs(Nao_x - coordinate[0])
+                t = ControllerThread("forwards", mutex2, self.startMotion, self.forwards)
+                t.start()
+                coordinate[0] = Nao_x
+            else:
+                distance -= abs(Nao_y - coordinate[1])
+                t = ControllerThread("forwards", mutex2, self.startMotion, self.forwards)
+                t.start()
+                coordinate[1] = Nao_y
+        elif motion == self.backwards.motion:
+            if DIRECTION in [0, 2]:
+                # x 方向
+                distance -= abs(Nao_x - coordinate[0])
+                t = ControllerThread("backwards", mutex2, self.startMotion, self.backwards)
+                t.start()
+                coordinate[0] = Nao_x
+            else:
+                distance -= abs(Nao_y - coordinate[1])
+                t = ControllerThread("backwards", mutex2, self.startMotion, self.backwards)
+                t.start()
+                coordinate[1] = Nao_y
+
+        if distance > 0:
+            self._move_distance(motion, distance, coordinate)
 
     def startMotionWithTarget(self, motion, target):
-        self._move(target)
+
         if target.measureWord == "度":
             if str(target.numeral) in ["40", "四十"]:
                 # 将左转(右转)90度的motion换为左转(右转)40
                 # 纯属无奈之举，因为动作是motion固定的
-                if motion == self.turnLeft90:
-                    motion = self.turnLeft40
-                elif motion == self.turnRight90:
-                    motion = self.turnRight40
+                if motion == self.turnLeft90.motion:
+                    motion = self.turnLeft40.motion
+                elif motion == self.turnRight90.motion:
+                    motion = self.turnRight40.motion
             elif str(target.numeral) in ["60", "六十"]:
                 # 将左转(右转)90度的motion换为左转(右转)60
-                if motion == self.turnLeft90:
-                    motion = self.turnLeft60
-                elif motion == self.turnRight90:
-                    motion = self.turnRight60
+                if motion == self.turnLeft90.motion:
+                    motion = self.turnLeft60.motion
+                elif motion == self.turnRight90.motion:
+                    motion = self.turnRight60.motion
             self.startMotion(motion)
+        else:
+            self._move(target, motion)
 
     # 获取指令并传给分析器
     def setInstruction(self):
