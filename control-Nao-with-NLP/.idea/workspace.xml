@@ -162,20 +162,19 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="naoController_" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="word" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="control-Nao-with-NLP" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
-        <env name="PYTHONUNBUFFERED" value="1PYTHONUNBUFFERED=1" />
-        <env name="PATH" value="E:\Webots\lib\controller;E:\Webots\msys64\mingw64\bin\cpp" />
+        <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/control/controller" />
+      <option name="SDK_HOME" value="C:\Users\uhanhi\AppData\Local\Programs\Python\Python37\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/control/struct" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="F:\control-Nao-with-NLP\control-Nao-with-NLP\control\controller\naoController.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/control/struct/word.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -189,16 +188,16 @@
       <item itemvalue="Python.instructionAnalyzer" />
       <item itemvalue="Python.naoController" />
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.naoController_" />
       <item itemvalue="Python.action" />
+      <item itemvalue="Python.word" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.naoController" />
         <item itemvalue="Python.instructionAnalyzer" />
+        <item itemvalue="Python.word" />
         <item itemvalue="Python.action" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.naoController_" />
       </list>
     </recent_temporary>
   </component>
@@ -214,5 +213,16 @@
       <updated>1618155134639</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/control/controller/naoController.py</url>
+          <line>428</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
