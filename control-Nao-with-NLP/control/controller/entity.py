@@ -39,11 +39,15 @@ class Light(Entity):
     pass
 
 
-desk = Entity(x=-0.8, y=-2.5, z=0, x_length=1.2, y_length=0.8, height=0.53, name="桌子")
+table = Entity(x=-0.8, y=-2.5, z=0, x_length=0.8, y_length=1.2, height=0.53, name="桌子")
 
 light = Entity(x=-3.8, y=-4.1, z=0, x_length=0.25, y_length=0.25, name="落地灯")
 
-entities = (desk, light)
+sofa1 = Entity(x=-0.64, y=-0.644, z=0, x_length=1, y_length=1, name="沙发")
+
+plant1 = Entity(x=-3.5, y=0.36, z=0, x_length=0.3, y_length=0.3, name="盆栽")
+
+entities = (table, light, sofa1, plant1)
 
 
 def getEntityObject(entityName, position = "前面"):
@@ -60,7 +64,7 @@ def getEntityObject(entityName, position = "前面"):
             elif position in ["左面", "左方", "左边"]:
                 return item.left
             elif position in ["右面", "右方", "右边"]:
-                return  item.right
+                return item.right
             else:
                 return item.front
 
