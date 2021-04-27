@@ -172,6 +172,7 @@ class DependencyParser(InstructionAnalyzer):
 
         return actionSequence
 
+
 def test1():
     d = SegmentationAndTagging()
     d.setInstruction("机器人前进")
@@ -181,7 +182,7 @@ def test1():
 def test2():
     d = DependencyParser()
 
-    with open('../../../docs/instruction.txt', 'r', encoding='utf-8') as fread:
+    with open('../data/instruction.txt', 'r', encoding='utf-8') as fread:
         instructions = fread.readlines()
         for instruction in instructions:
             d.setInstruction(instruction.strip())
@@ -200,6 +201,6 @@ def test3():
 
 
 if __name__ == "__main__":
-    # test2()
+    test2()
     # test1()
-    test3()
+    # test3()

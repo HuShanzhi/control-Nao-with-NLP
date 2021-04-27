@@ -102,6 +102,8 @@ class Word:
             if self.HEAD.chunkType == ChunkType.motionControl:
                 if self.POSTAG == 'v':
                     self.chunkType = ChunkType.motionControl
+                elif self.POSTAG == 'q':
+                    self.chunkType = ChunkType.movingTarget
         elif self.DEPREL == "并列关系":
             if self.isCoreWord:
                 if self.POSTAG in ["v", "vf"]:
@@ -139,7 +141,7 @@ class Word:
             briefList[3] +=  ':' + str(self.HEAD) + ':' + str(id(self.HEAD))
             spaceList[3] = 28
         for i in range(len(briefList)):
-            print("{}".format(briefList[i]).ljust(spaceList[i]), end='')
+            print("{}".format(briefList[i]).ljust(spaceList[i], '　'), end='')
 
         try:
             if kwargs["relationship"]:
