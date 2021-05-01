@@ -158,7 +158,6 @@ class Word:
             print('')
 
 
-
 # 句子树
 class Sentence(Word):
     # 将Sentence句子树可以作为一个根结点
