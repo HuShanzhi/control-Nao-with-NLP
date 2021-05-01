@@ -60,13 +60,13 @@ class ControllerThread(Thread):
 
     def run(self):
         self.mutex.acquire()
-        print(self.action + "开始执行")
+        print("======  " + self.action + "开始执行" + "  ======")
         if self.target is None :
             self.func(self.motion)
         else:
             self.func(self.motion, self.target)
         time.sleep(self.time)
-        print(self.action + "执行结束")
+        print("======  " + self.action + "执行结束" + "  ======")
         self.mutex.release()
         if synchro.locked():
             synchro.release()
@@ -109,6 +109,14 @@ class Nao(Robot):
     def getNaoGps(self):
         return self.gps.getValues()[2], self.gps.getValues()[0]
 
+    # 获取距离传感器的距离
+    def getDistance(self):
+        print(self.SonarLeft.getType(), self.SonarRight.getType())
+        print(self.SonarLeft.getMaxValue(), self.SonarLeft.getMinValue())
+        print("左距离传感器的值为：{}".format(self.SonarLeft.getValue()))
+        print("右距离传感器的值为：{}".format(self.SonarRight.getValue()))
+        return self.SonarLeft.getValue(), self.SonarRight.getValue()
+
     # 加载仿真nao上的装置
     def findAndEnableDevices(self):
         # 来自webots官方demo
@@ -120,6 +128,14 @@ class Nao(Robot):
         self.cameraBottom = self.getDevice("CameraBottom")
         self.cameraTop.enable(4 * self.timeStep)
         self.cameraBottom.enable(4 * self.timeStep)
+
+        # ========================================================== #
+        # 距离传感器
+        self.SonarLeft = self.getDevice("Sonar/Left")
+        self.SonarRight = self.getDevice("Sonar/Right")
+        self.SonarLeft.enable(4 * self.timeStep)
+        self.SonarRight.enable(4 * self.timeStep)
+        # ========================================================== #
 
         # accelerometer
         self.accelerometer = self.getDevice('accelerometer')
@@ -201,8 +217,8 @@ class Nao(Robot):
         self.forwards = Motion_('Forwards', 4)
         self.forwards50 = Motion_('Forwards50', 8)
         self.backwards = Motion_('Backwards', 2)
-        self.sideStepLeft = Motion_('SideStepLeft', 2)
-        self.sideStepRight = Motion_('SideStepRight', 2)
+        self.sideStepLeft = Motion_('SideStepLeft', 6)
+        self.sideStepRight = Motion_('SideStepRight', 6)
         self.standUpFromFront = Motion_('StandUpFromFront', 2)
         self.turnLeft40 = Motion_('TurnLeft40', 4)
         self.turnLeft60 = Motion_('TurnLeft60', 6)
@@ -231,6 +247,22 @@ class Nao(Robot):
         print("DIRECTION = {}".format(DIRECTION))
         # ========================================= #
 
+    # 通过左右移动进行避障
+    def avoidObstacles(self):
+        # 获取左右距离传感器的距离
+        distanceLeft, distanceRight = self.getDistance()
+        while distanceLeft < 0.26 or distanceRight < 0.26:
+            # 距离过小，进行避障，开始左右移动
+
+            if distanceLeft > distanceRight:
+                t_ = ControllerThread("SideStepLeft", mutex2, self.startMotion, self.sideStepLeft)
+                t_.start()
+            else:
+                t_ = ControllerThread("SideStepRight", mutex2, self.startMotion, self.sideStepRight)
+                t_.start()
+            time.sleep(8)
+            distanceLeft, distanceRight = self.getDistance()
+
     def _move(self, target, motion=None):
         """
         :param target: 移动目标点的坐标
@@ -243,9 +275,14 @@ class Nao(Robot):
         if target.entity is not None:
             # Nao当前坐标
             Nao_x, Nao_y = self.getNaoGps()
+            # self.getDistance()
             print("Nao的坐标（{},{}）".format(Nao_x, Nao_y))
             print("Target的坐标（{},{}）".format(target.entity[0], target.entity[1]))
             target_x, target_y = target.entity[0], target.entity[1]
+
+            # 避障
+            self.avoidObstacles()
+            '''
             if abs(Nao_x - target_x) < ACCURACY and abs(Nao_y - target_y) < ACCURACY:
                 print("到达目标附近")
                 return
@@ -356,6 +393,114 @@ class Nao(Robot):
                 t_ = ControllerThread("backwards", mutex2, self.startMotion, self.turnLeft180)
                 t_.start()
                 self._move(target)
+            '''
+
+            while True:
+
+                if abs(Nao_x - target_x) < ACCURACY and abs(Nao_y - target_y) < ACCURACY:
+                    print("到达目标附近")
+                    break
+
+                # 考虑机器人的朝向，总共有16种组合
+                # ============================================================================================= #
+                # ===================================  目标在前面  ============================================== #
+                # ============================================================================================= #
+                if (target_x - Nao_x) > ACCURACY and DIRECTION == 0:
+                    print("目标在我的前面")
+                    t_ = ControllerThread("forwards", mutex2, self.startMotion, self.forwards)
+                    t_.start()
+
+                elif (target_y - Nao_y) > ACCURACY and DIRECTION == 1:
+                    print("目标在我的前面")
+                    t_ = ControllerThread("forwards", mutex2, self.startMotion, self.forwards)
+                    t_.start()
+
+                elif (Nao_x - target_x) > ACCURACY and DIRECTION == 2:
+                    print("目标在我的前面")
+                    t_ = ControllerThread("forwards", mutex2, self.startMotion, self.forwards)
+                    t_.start()
+
+                elif (Nao_y - target_y) > ACCURACY and DIRECTION == 3:
+                    # 目标在我的前边
+                    print("目标在我的前边")
+                    t_ = ControllerThread("forwards", mutex2, self.startMotion, self.forwards)
+                    t_.start()
+                # ============================================================================================= #
+                # ===================================  目标在左边  ============================================== #
+                # ============================================================================================= #
+                elif (target_y - Nao_y) > ACCURACY and DIRECTION == 0:
+                    print("目标在我的左边")
+                    t_ = ControllerThread("turn left", mutex2, self.startMotion, self.turnLeft90)
+                    t_.start()
+
+                elif (Nao_x - target_x) > ACCURACY and DIRECTION == 1:
+                    print("目标在我的左边")
+                    t_ = ControllerThread("turn left", mutex2, self.startMotion, self.turnLeft90)
+                    t_.start()
+
+                elif (Nao_y - target_y) > ACCURACY and DIRECTION == 2:
+                    print("目标在我的左边")
+                    t_ = ControllerThread("turn left", mutex2, self.startMotion, self.turnLeft90)
+                    t_.start()
+
+                elif (target_x - Nao_x) > ACCURACY and DIRECTION == 3:
+                    print("目标在我的左边")
+                    t_ = ControllerThread("turn left", mutex2, self.startMotion, self.turnLeft90)
+                    t_.start()
+                # ============================================================================================= #
+                # ===================================  目标在右边  ============================================== #
+                # ============================================================================================= #
+                elif (Nao_y - target_y) > ACCURACY and DIRECTION == 0:
+                    print("目标在我的右边")
+                    t_ = ControllerThread("turn right", mutex2, self.startMotion, self.turnRight90)
+                    t_.start()
+
+                elif (target_x - Nao_x) > ACCURACY and DIRECTION == 1:
+                    print("目标在我的右面")
+                    t_ = ControllerThread("turn right", mutex2, self.startMotion, self.turnRight90)
+                    t_.start()
+
+                elif (target_y - Nao_y) > ACCURACY and DIRECTION == 2:
+                    print("目标在我的右边")
+                    t_ = ControllerThread("turn right", mutex2, self.startMotion, self.turnRight90)
+                    t_.start()
+
+                elif (Nao_x - target_x) > ACCURACY and DIRECTION == 3:
+                    print("目标在我的右面")
+                    t_ = ControllerThread("turn right", mutex2, self.startMotion, self.turnRight90)
+                    t_.start()
+                # ============================================================================================= #
+                # ===================================  目标在后面  ============================================== #
+                # ============================================================================================= #
+                elif (Nao_x - target_x) > ACCURACY and DIRECTION == 0:
+                    print("目标在我的后面")
+                    t_ = ControllerThread("backwards", mutex2, self.startMotion, self.turnLeft180)
+                    t_.start()
+
+                elif (Nao_y - target_y) > ACCURACY and DIRECTION == 1:
+                    print("目标在我的后面")
+                    t_ = ControllerThread("backwards", mutex2, self.startMotion, self.turnLeft180)
+                    t_.start()
+
+                elif (target_x - Nao_x) > ACCURACY and DIRECTION == 2:
+                    print("目标在我的后面")
+                    t_ = ControllerThread("backwards", mutex2, self.startMotion, self.turnLeft180)
+                    t_.start()
+
+                elif (target_y - Nao_y) > ACCURACY and DIRECTION == 3:
+                    print("目标在我的后面")
+                    t_ = ControllerThread("backwards", mutex2, self.startMotion, self.turnLeft180)
+                    t_.start()
+
+                time.sleep(8)
+                # Nao当前坐标
+                Nao_x, Nao_y = self.getNaoGps()
+                # self.getDistance()
+                print("Nao的坐标（{},{}）".format(Nao_x, Nao_y))
+                print("Target的坐标（{},{}）".format(target.entity[0], target.entity[1]))
+                target_x, target_y = target.entity[0], target.entity[1]
+
+                self.avoidObstacles()
 
         elif target.measureWord is not None and target.numeral is not None:
             if target.measureWord in ['米', 'm', 'M']:
