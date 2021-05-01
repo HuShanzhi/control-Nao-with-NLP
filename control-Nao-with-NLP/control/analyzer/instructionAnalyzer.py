@@ -109,11 +109,13 @@ class DependencyParser(InstructionAnalyzer):
         # 这个地方需简化，可不可以让word类用JClass继承CoNNLLWord类
         # 1. 传入每个词汇的支配词
         for word in words:
-            # 非核心支配词
+            # 剔除核心词
+            # 原因：在HanLP依存句法分析结果中，核心词的支配词为Root，本工程不涉及Root，故不剔除会报错。
             if word.HEAD_ID != 0:
                 word.setHEAD(words[word.HEAD_ID - 1])
         # 2. 传入每个词汇的从属词
         for word in words:
+            # 剔除核心词和准核心词，因为它们没有支配词。
             if not word.isCoreWord:
                 # 剔除标点符号
                 if word.POSTAG != 'w':
@@ -121,7 +123,7 @@ class DependencyParser(InstructionAnalyzer):
         # ================================================================================== #
         return words
 
-    # word是否为准核心词
+    # 判断word是否为准核心词
     def __isQuasiCoreWord(self, word):
         # 目前定义的准核心关系词为：
         # （1）与核心词有并列关系的单词；
@@ -193,8 +195,8 @@ def test2():
 def test3():
     d = DependencyParser()
     # d.setInstruction("机器人前进到桌子的前面，然后左转，然后直走，然后右转，然后直行，然后左转，然后直走，然后右转，然后直行")
-    # d.setInstruction("机器人前进到桌子的前面，然后左转，然后直走")
-    d.setInstruction("机器人前进到桌子旁，然后左转90度，然后向前走2米")
+    d.setInstruction("机器人前进到桌子的前面，然后左转，然后直走")
+    # d.setInstruction("机器人前进到桌子旁，然后左转90度，然后向前走2米")
     # d.setInstruction("机器人前进到桌子旁，然后左转90度，然后向前走2米")
     d.createSentenceTree()
     d.generateActionSequence()
