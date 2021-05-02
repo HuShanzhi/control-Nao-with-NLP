@@ -39,13 +39,13 @@ class Light(Entity):
     pass
 
 
-table = Entity(x=-0.8, y=-2.5, z=0, x_length=0.8, y_length=1.2, height=0.46, name="桌子")
+table = Entity(x=-0.8, y=-2.5, z=0, x_length=0.8, y_length=1, height=0.46, name="桌子")
 
 light = Entity(x=-3.8, y=-4.1, z=0, x_length=0.25, y_length=0.25, name="落地灯")
 
 sofa1 = Entity(x=-0.64, y=-0.644, z=0, x_length=1, y_length=1, name="沙发")
 
-plant1 = Entity(x=-3.5, y=0.36, z=0, x_length=0.3, y_length=0.3, name="盆栽")
+plant1 = Entity(x=-3.29, y=-1.1, z=0, x_length=0.3, y_length=0.3, name="盆栽")
 
 entities = (table, light, sofa1, plant1)
 
