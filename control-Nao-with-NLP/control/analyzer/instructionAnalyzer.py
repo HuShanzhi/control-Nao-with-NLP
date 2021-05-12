@@ -160,7 +160,7 @@ class DependencyParser(InstructionAnalyzer):
         for item in words:
             # print(item, end=': ')
             # item.printWordInfo()
-            item.printWordInfo(relationship=True, chunkInfo=True , addr=False)
+            item.printWordInfo(relationship=False, chunkInfo=False , addr=False)
 
 
         # for coreWord in self.sentenceTrees:
@@ -195,7 +195,8 @@ def test2():
 def test3():
     d = DependencyParser()
     # d.setInstruction("机器人前进到桌子的前面，然后左转，然后直走，然后右转，然后直行，然后左转，然后直走，然后右转，然后直行")
-    d.setInstruction("机器人前进到桌子的前面，然后左转，然后直走")
+    d.setInstruction("机器人前进到桌子的左边，然后左转，然后直走。")
+    # d.setInstruction("机器人,请走到")
     # d.setInstruction("机器人前进到桌子旁，然后左转90度，然后向前走2米")
     # d.setInstruction("机器人前进到桌子旁，然后左转90度，然后向前走2米")
     d.createSentenceTree()
@@ -203,6 +204,6 @@ def test3():
 
 
 if __name__ == "__main__":
-    test2()
+    # test2()
     # test1()
-    # test3()
+    test3()
