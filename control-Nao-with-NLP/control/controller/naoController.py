@@ -22,7 +22,7 @@ import time
 # 0：左； 1：下； 2：右； 3：上
 DIRECTION = 0
 # 机器人运动精确度
-ACCURACY = 0.1
+ACCURACY = 0.2
 
 # ========================================================================= #
 # ========================================================================= #
@@ -407,6 +407,7 @@ class Nao(Robot):
             while True:
                 relativeDirection = self.locatingObjects(target=(targetX, targetY))
                 if relativeDirection == RelativeDirection.nearby:
+
                     print("到达目标附近")
                     break
 
