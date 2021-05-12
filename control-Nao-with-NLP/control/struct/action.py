@@ -6,13 +6,12 @@
 from control.struct.chunk_ import ChunkType, MovingTarget
 
 ACTIONS = {
-    "move": ["走", "去", "到", "直走", "前进", "直行"],
+    "move": ["走", "去", "到", "直走", "前进", "直行", "移动"],
     "turnLeft": ["左转", "向左转"],
     "turnRight": ["右转", "向右转"],
     "wave": ["举手", "招手", "挥手"],
     "back": ["后退", "向后退"],
     "turnBack": ["向后转"]
-    # "turnBack": ["向后转"]
 }
 
 
@@ -36,6 +35,7 @@ class Action:
         if word.chunkType == ChunkType.motionSubject:
             self.motionSubject = word.LEMMA
         if word.chunkType == ChunkType.motionControl:
+            self.motionControl = self.motionControl if self.__localInACTIONS(word.LEMMA) is None else self.__localInACTIONS(word.LEMMA)
             for dependentWord in word.dependentWords:
                 self.__traversal_child_node(dependentWord)
 
