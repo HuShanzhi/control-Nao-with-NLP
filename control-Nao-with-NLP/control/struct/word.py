@@ -81,7 +81,7 @@ class Word:
             if self.HEAD.chunkType == ChunkType.motionControl:
                 if self.POSTAG == 'n':
                     self.chunkType = ChunkType.movingTarget
-                elif self.POSTAG == 'v':
+                elif self.POSTAG in ['v', "vf"]:
                     # 例如：请（核心关系）前进（动宾关系）
                     self.chunkType = ChunkType.motionControl
                 elif self.POSTAG == 'q':
