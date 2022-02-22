@@ -33,12 +33,16 @@
 
 ### 单一命令测试
 　　**命令**：”机器人前进。“
+
 　　**测试视频**：https://www.bilibili.com/video/BV1TL4y1g7Zv?spm_id_from=333.999.0.0
 
 ### 组合命令测试
 　　**命令**：”机器人前进2米，然后左转60度。“
+
 　　**测试视频**：https://www.bilibili.com/video/BV1Z44y1J7Na?spm_id_from=333.999.0.0
 　　
+
 ### 带有目标方位的命令测试
 　　**命令**：“机器人前进到桌子的左边。”
+
 　　**测试视频**：https://www.bilibili.com/video/BV1C3411L7cM?spm_id_from=333.999.0.0
